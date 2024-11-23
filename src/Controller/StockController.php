@@ -20,6 +20,10 @@ final class StockController extends AbstractController
         return $this->render('stock/index.html.twig', [
             'stocks' => $stockRepository->findAll(),
         ]);
+        // $this->getUser();
+        // return $this->render('profile/index.html.twig', [
+        //     'controller_name' => 'ProfileController',
+        // ]);
     }
 
     #[Route('/new', name: 'app_stock_new', methods: ['GET', 'POST'])]
@@ -71,7 +75,7 @@ final class StockController extends AbstractController
     #[Route('/{id}', name: 'app_stock_delete', methods: ['POST'])]
     public function delete(Request $request, Stock $stock, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$stock->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $stock->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($stock);
             $entityManager->flush();
         }

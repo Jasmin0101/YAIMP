@@ -17,12 +17,12 @@ class Depositary
     #[ORM\JoinColumn(nullable: false)]
     private ?Stock $stock = null;
 
-    #[ORM\ManyToOne(inversedBy: 'Portfolio')]
+    #[ORM\ManyToOne(inversedBy: 'depositaries')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Portfolio $portfolio = null;
 
     #[ORM\Column]
-    private ?int $count = null;
+    private ?int $quantity = null;
 
     public function getId(): ?int
     {
@@ -53,14 +53,14 @@ class Depositary
         return $this;
     }
 
-    public function getCount(): ?int
+    public function getQuantity(): ?int
     {
-        return $this->count;
+        return $this->quantity;
     }
 
-    public function setCount(int $count): static
+    public function setQuantity(int $quantity): static
     {
-        $this->count = $count;
+        $this->quantity = $quantity;
 
         return $this;
     }
