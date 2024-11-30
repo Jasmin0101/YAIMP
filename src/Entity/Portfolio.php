@@ -15,16 +15,31 @@ class Portfolio
     #[ORM\Column]
     private ?int $id = null;
 
+    // Указывает связь "многие-к-одному" между Portfolio и User.
+    // Один пользователь может иметь много портфелей,
+    //  но каждый портфель связан только с одним пользователем.
+    //inversedBy: 'portfolios'
+    // Указывает, что обратная связь описана в сущности User в поле $portfolios.
+
     #[ORM\ManyToOne(inversedBy: 'portfolios')]
+    // Указывает что  поле пользователя не должно быть нулабельным тк у каждого портфеля обязательно сущ пользователь 
     #[ORM\JoinColumn(nullable: false)]
+
+    // хранит объект пользователя
     private ?User $user = null;
 
     #[ORM\Column]
+
+    // балансе 
     private ?float $balance = null;
 
+    // Оп оп вот она связь с Депозитарием
+    // PHPDoc-аннотация, указывающая, что это поле содержит коллекцию объектов
     /**
      * @var Collection<int, Depositary>
      */
+
+    // Тут аналогично связи пользователя с портфелем, один ко многим, 1 портфель =? многа бумяг 
     #[ORM\OneToMany(targetEntity: Depositary::class, mappedBy: 'portfolio')]
     private Collection $Portfolio;
 
@@ -79,6 +94,12 @@ class Portfolio
 
         return $this;
     }
+
+    // addPortfolio()
+// Добавляет объект Depositary в коллекцию и устанавливает связь с текущим портфелем.
+
+    // removePortfolio()
+// Удаляет объект Depositary из коллекции и разрывает связ
 
     public function removePortfolio(Depositary $portfolio): static
     {
