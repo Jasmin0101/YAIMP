@@ -16,6 +16,16 @@ class StockRepository extends ServiceEntityRepository
         parent::__construct($registry, Stock::class);
     }
 
+    public function findById(int $stockId): ?Stock
+    {
+
+        return $this->createQueryBuilder('s')// alias псевдоним просто переобозначаем название передоваемого параметра 
+            ->andWhere('s.id = :stockId')
+            ->setParameter('stockId', $stockId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Stock[] Returns an array of Stock objects
     //     */

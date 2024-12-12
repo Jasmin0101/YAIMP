@@ -6,17 +6,23 @@
 <div>
     {% set total = 0 %}
     <h1>User name: {{ user.username }}</h1>
-    <h1>All portfolios: </h1>
+    <h1>Your portfolios: </h1>
+    <h3>Total numbers of portfolios : {{user.portfolios|length}}</h3>
     {% for portfolio in user.portfolios %}
-        <span>Portfolio {{ portfolio.id }} has {{ portfolio.balance }} money and has stocks:</span>
+        {%set walletTotal = 0 %}
+
+        <span>Portfolio {{ portfolio.id }} has {{ portfolio.balance }} money and has stocks: </span>
         <br>
         {% for depositary in portfolio.depositaries %}
-            {% set total = total + depositary.quantity %}
-            Stock name: {{ depositary.stock.name }}, quantity: {{ depositary.quantity }}
+            {% set walletTotal =walletTotal + depositary.quantity %}
+            {% set total = total + walletTotal %}
+            <div><h4>Stock name:</h4> <p>{{ depositary.stock.security }}, quantity: {{ depositary.quantity }}<p></div>
             <br>
         {% endfor %}
+        {%set walletTotal = walletTotal + portfolio.balance%}
+        <h3>Balance of portfolio {{portfolio.id}}:   {{walletTotal}}</h3>
         <br>
     {% endfor %}
-    <h1> Total quantity: {{ total }}</h1>
+    <h1> Total balance: {{ total }}</h1>
 </div>
 {% endblock %}

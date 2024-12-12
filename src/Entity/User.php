@@ -61,10 +61,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Portfolio::class, mappedBy: 'user')]
     private Collection $portfolios;
 
+    /**
+     * @var Collection<int, Application>
+     */
+    #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'user')]
+    private Collection $applicatios;
+
     // после создания пользователя данный метод создает пустой портфель для него (создает пустую коллекцию портфелей)
     public function __construct()
     {
         $this->portfolios = new ArrayCollection();
+        $this->applicatios = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -183,4 +190,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     //     return $this;
     // }
+
+    /**
+     * @return Collection<int, Application>
+     */
+    public function getApplicatios(): Collection
+    {
+        return $this->applicatios;
+    }
+
+    public function addApplicatio(Application $application): static
+    {
+        if (!$this->applicatios->contains($application)) {
+            $this->applicatios->add($application);
+            $application->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplicatio(Application $application): static
+    {
+        if ($this->applicatios->removeElement($application)) {
+            // set the owning side to null (unless already changed)
+            if ($application->getUser() === $this) {
+                $application->setUser(null);
+            }
+        }
+
+        return $this;
+    }
 }

@@ -41,11 +41,11 @@ class Portfolio
 
     // Тут аналогично связи пользователя с портфелем, один ко многим, 1 портфель =? многа бумяг 
     #[ORM\OneToMany(targetEntity: Depositary::class, mappedBy: 'portfolio')]
-    private Collection $Portfolio;
+    private Collection $depositaries;
 
     public function __construct()
     {
-        $this->Portfolio = new ArrayCollection();
+        $this->depositaries = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -53,14 +53,14 @@ class Portfolio
         return $this->id;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUserId(?User $user): static
+    public function setUser(?User $user): static
     {
-        $this->user_id = $user;
+        $this->user = $user;
 
         return $this;
     }
@@ -80,36 +80,35 @@ class Portfolio
     /**
      * @return Collection<int, Depositary>
      */
-    public function getPortfolio(): Collection
+    public function getDepositaries(): Collection
     {
-        return $this->Portfolio;
+        return $this->depositaries;
     }
 
-    public function addPortfolio(Depositary $portfolio): static
+    public function addDepositary(Depositary $depositary): static
     {
-        if (!$this->Portfolio->contains($portfolio)) {
-            $this->Portfolio->add($portfolio);
-            $portfolio->setPortfolio($this);
+        if (!$this->depositaries->contains($depositary)) {
+            $this->depositaries->add($depositary);
+            $depositary->setPortfolio($this);
         }
 
         return $this;
     }
-
     // addPortfolio()
 // Добавляет объект Depositary в коллекцию и устанавливает связь с текущим портфелем.
 
     // removePortfolio()
 // Удаляет объект Depositary из коллекции и разрывает связ
 
-    public function removePortfolio(Depositary $portfolio): static
-    {
-        if ($this->Portfolio->removeElement($portfolio)) {
-            // set the owning side to null (unless already changed)
-            if ($portfolio->getPortfolio() === $this) {
-                $portfolio->setPortfolio(null);
-            }
-        }
+    // public function removePortfolio(Depositary $portfolio): static
+    // {
+    //     if ($this->Portfolio->removeElement($portfolio)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($portfolio->getPortfolio() === $this) {
+    //             $portfolio->setPortfolio(null);
+    //         }
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 }

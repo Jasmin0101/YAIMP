@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stock glass index{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1>glass index {{stock.security}}</h1>
+    <h2>Buy</h2>
+    <div style="color:green">abacaba
+    {% for app in stock.applications%}
+         {%if app.action == BUY %}
+         price :{{app.price}} | quantity{{app.quantity}} | total {{app.quantity * app.price}}
+         {%endif%}
+    {%endfor%}
+    </div>
+    <h3>Sell</h3>
+    <div style="color:red">abacaba
+    {%for app in stock.applications %}
+         {%if app.action == SELL %}
+         price :{{app.price}} | quantity{{app.quantity}}
+         {%endif%}
+    {%endfor%}
+    </div>
+
+</div>
+{% endblock %}
