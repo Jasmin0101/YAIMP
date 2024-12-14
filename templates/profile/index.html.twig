@@ -1,8 +1,10 @@
 {% extends 'base.html.twig' %}
-
+    {% block head %}   <link rel="stylesheet" href="{{ asset('css/style.css') }}">  
+        {% endblock %}
 {% block title %}User Profile{% endblock %}
 
 {% block body %}
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">  
 <div>
     {% set total = 0 %}
     <h1>User name: {{ user.username }}</h1>
@@ -15,14 +17,43 @@
         <br>
         {% for depositary in portfolio.depositaries %}
             {% set walletTotal =walletTotal + depositary.quantity %}
-            {% set total = total + walletTotal %}
             <div><h4>Stock name:</h4> <p>{{ depositary.stock.security }}, quantity: {{ depositary.quantity }}<p></div>
             <br>
         {% endfor %}
         {%set walletTotal = walletTotal + portfolio.balance%}
+        {% set total = walletTotal+total%}
         <h3>Balance of portfolio {{portfolio.id}}:   {{walletTotal}}</h3>
         <br>
     {% endfor %}
     <h1> Total balance: {{ total }}</h1>
+    
+    {%if user.portfolios|length <= 4%}
+    <button class="btn btn-primary" onclick="addPortfolio()">Add New Portfolio</button>
+    {%endif%}
+    {%if user.portfolios|length >5 %}
+       <button class="btn" onclick="alert('You have a limit of portfolios!');">Add New Portfolio</button>
+     {%endif%}
+
+
+<script>
+    async function addPortfolio() {
+    
+        const response = await fetch('{{ path('add_portfolio') }}', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            alert('Portfolio added successfully!');
+            location.reload();
+        } else {
+            alert('Failed to add portfolio');
+        }
+    }
+</script>
+
 </div>
 {% endblock %}

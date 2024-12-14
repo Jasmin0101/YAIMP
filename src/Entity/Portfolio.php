@@ -94,8 +94,7 @@ class Portfolio
 
         return $this;
     }
-    // addPortfolio()
-// Добавляет объект Depositary в коллекцию и устанавливает связь с текущим портфелем.
+
 
     // removePortfolio()
 // Удаляет объект Depositary из коллекции и разрывает связ

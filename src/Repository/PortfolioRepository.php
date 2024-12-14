@@ -16,6 +16,7 @@ class PortfolioRepository extends ServiceEntityRepository
         parent::__construct($registry, Portfolio::class);
     }
 
+
     //    /**
     //     * @return Portfolio[] Returns an array of Portfolio objects
     //     */
