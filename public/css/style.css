@@ -6,8 +6,8 @@ body {
   padding: 0;
 }
 
-/* Стиль для контейнера контента */
-div {
+/* Контейнер профиля пользователя */
+#user-profile {
   max-width: 1200px;
   margin: 50px auto;
   padding: 20px;
@@ -17,21 +17,35 @@ div {
 }
 
 /* Заголовки */
-h1,
-h3 {
+#user-name,
+#portfolios-title,
+#total-balance {
   color: #2c3e50;
   font-weight: 600;
 }
 
-h1 {
+#user-name {
   font-size: 2.5rem;
 }
 
-h3 {
+#portfolios-title {
+  font-size: 2rem;
+}
+
+#portfolio-count {
   font-size: 1.5rem;
 }
 
-/* Стили для каждой строки портфеля */
+#total-balance {
+  margin-top: 30px;
+  font-size: 1.8rem;
+}
+
+/* Список портфелей */
+#portfolios-list {
+  margin-top: 20px;
+}
+
 .portfolio-entry {
   margin-bottom: 30px;
   padding: 15px;
@@ -40,12 +54,28 @@ h3 {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.portfolio-entry h4 {
+.portfolio-entry .portfolio-info {
   font-size: 1.2rem;
   color: #34495e;
 }
 
-.portfolio-entry p {
+.portfolio-entry .portfolio-balance {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Элементы депозита */
+.depositary-entry {
+  margin-top: 10px;
+}
+
+.depositary-entry .stock-name {
+  font-size: 1.2rem;
+  color: #34495e;
+}
+
+.depositary-entry .stock-details {
   font-size: 1rem;
   color: #7f8c8d;
 }
@@ -64,17 +94,17 @@ button:hover {
   background-color: #2980b9;
 }
 
-/* Стиль для кнопки Add New Portfolio */
-.btn-primary {
+/* Кнопка "Добавить портфель" */
+button.btn-primary {
   background-color: #3498db;
   color: #fff;
 }
 
-.btn-primary:hover {
+button.btn-primary:hover {
   background-color: #2980b9;
 }
 
-/* Стиль для кнопки с ограничением */
+/* Кнопка ограничения */
 button.btn {
   background-color: #e74c3c;
   color: #fff;
@@ -84,10 +114,8 @@ button.btn:hover {
   background-color: #c0392b;
 }
 
-/* Стиль для вывода общей суммы баланса */
-h1.total-balance {
-  margin-top: 30px;
-  font-size: 1.8rem;
-  color: #2c3e50;
-  font-weight: 600;
+/* Контейнер действий с портфелями */
+#portfolio-actions {
+  margin-top: 20px;
+  text-align: center;
 }

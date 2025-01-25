@@ -1,43 +1,51 @@
 {% extends 'base.html.twig' %}
-    {% block head %}   <link rel="stylesheet" href="{{ asset('css/style.css') }}">  
-        {% endblock %}
+
 {% block title %}User Profile{% endblock %}
 
 {% block body %}
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">  
-<div>
+
+<div id="user-profile">
     {% set total = 0 %}
-    <h1>User name: {{ user.username }}</h1>
-    <h1>Your portfolios: </h1>
-    <h3>Total numbers of portfolios : {{user.portfolios|length}}</h3>
-    {% for portfolio in user.portfolios %}
-        {%set walletTotal = 0 %}
+    <h1 id="user-name">User name: {{ user.username }}</h1>
+    <h1 id="portfolios-title">Your portfolios:</h1>
+    <h3 id="portfolio-count">Total numbers of portfolios: {{ user.portfolios|length }}</h3>
 
-        <span>Portfolio {{ portfolio.id }} has {{ portfolio.balance }} money and has stocks: </span>
-        <br>
-        {% for depositary in portfolio.depositaries %}
-            {% set walletTotal =walletTotal + depositary.quantity %}
-            <div><h4>Stock name:</h4> <p>{{ depositary.stock.security }}, quantity: {{ depositary.quantity }}<p></div>
-            <br>
+    <div id="portfolios-list">
+        {% for portfolio in user.portfolios %}
+            {% set walletTotal = 0 %}
+
+            <div class="portfolio-entry" id="portfolio-{{ portfolio.id }}">
+                <span class="portfolio-info">Portfolio {{ portfolio.id }} has {{ portfolio.balance }} money and has stocks:</span>
+                <br>
+                {% for depositary in portfolio.depositaries %}
+                    <div class="depositary-entry">
+                        <h4 class="stock-name">Stock name:</h4>
+                        <p class="stock-details">{{ depositary.stock.security }}, quantity: {{ depositary.quantity }}</p>
+                    </div>
+                    <br>
+                {% endfor %}
+                {% set walletTotal = walletTotal + portfolio.balance %}
+                {% set total = walletTotal + total %}
+                <h3 class="portfolio-balance">Balance of portfolio {{ portfolio.id }}: {{ walletTotal }}</h3>
+                <br>
+            </div>
         {% endfor %}
-        {%set walletTotal = walletTotal + portfolio.balance%}
-        {% set total = walletTotal+total%}
-        <h3>Balance of portfolio {{portfolio.id}}:   {{walletTotal}}</h3>
-        <br>
-    {% endfor %}
-    <h1> Total balance: {{ total }}</h1>
-    
-    {%if user.portfolios|length <= 4%}
-    <button class="btn btn-primary" onclick="addPortfolio()">Add New Portfolio</button>
-    {%endif%}
-    {%if user.portfolios|length >5 %}
-       <button class="btn" onclick="alert('You have a limit of portfolios!');">Add New Portfolio</button>
-     {%endif%}
+    </div>
 
+    <h1 id="total-balance" class="total-balance">Total balance: {{ total }}</h1>
+
+    <div id="portfolio-actions">
+        {% if user.portfolios|length <= 4 %}
+            <button class="btn btn-primary" onclick="addPortfolio()">Add New Portfolio</button>
+        {% endif %}
+        {% if user.portfolios|length >= 5 %}
+            <button class="btn" onclick="alert('You have a limit of portfolios!');">Add New Portfolio</button>
+        {% endif %}
+    </div>
+</div>
 
 <script>
     async function addPortfolio() {
-    
         const response = await fetch('{{ path('add_portfolio') }}', {
             method: 'POST',
             headers: {
@@ -55,5 +63,4 @@
     }
 </script>
 
-</div>
 {% endblock %}

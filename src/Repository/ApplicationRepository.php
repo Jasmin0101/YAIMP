@@ -6,8 +6,8 @@ use App\Entity\Application;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Application>
+/** 
+ * @extends ServiceEntityRepository<Application> 
  */
 class ApplicationRepository extends ServiceEntityRepository
 {
@@ -15,4 +15,24 @@ class ApplicationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Application::class);
     }
+
+
+    public function saveApplication(Application $application): void
+    {
+        $this->getEntityManager()->persist($application);
+        $this->getEntityManager()->flush();
+    }
+
+    public function removeApplication(Application $application): void
+    {
+        $this->getEntityManager()->remove($application);
+        $this->getEntityManager()->flush();
+    }
+    public function findAppropriate(Application $application): void
+    {
+        $this->getEntityManager()->remove($application);
+        $this->getEntityManager()->flush();
+    }
+
+
 }
