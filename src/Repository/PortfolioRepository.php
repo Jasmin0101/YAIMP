@@ -16,6 +16,16 @@ class PortfolioRepository extends ServiceEntityRepository
         parent::__construct($registry, Portfolio::class);
     }
 
+    // PortfolioRepository.php
+    public function findByUserId(int $userId)
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.user = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 
     //    /**
     //     * @return Portfolio[] Returns an array of Portfolio objects

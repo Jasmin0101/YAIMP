@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Applications{% endblock %}
+
+{% block body %}
+<div id="app_bar">
+    <!-- Кнопки для перехода на другие страницы -->
+    <button class="app_bar_button" onclick="window.location.href='{{ path('app_profile') }}'">Profile</button>
+        <button class="app_bar_button" onclick="window.location.href='{{ path('app_stock_glass_view') }}'">Application</button>
+</div>
+
+<div class="example-wrapper">
+    <h1>All Applications</h1>
+
+    <!-- Кнопка для создания новой заявки -->
+    <div style="margin-bottom: 20px;">
+        <button >Create Application</button>
+    </div>
+
+    {% for stock in stocks %}
+        {% for app in stock.applications %}
+            {% if app.action %}
+                <div class="application">
+                    <h4 style="color:deeppink">{{ stock.security }}</h4>
+
+                    {% if app.action == 'BUY' %}
+                        <div style="color:green">
+                            <p>Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}</p>
+                        </div>
+                    {% elseif app.action == 'SELL' %}
+                        <div style="color:red">
+                            <p>Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}</p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Кнопки для редактирования и удаления заявки -->
+                    <div class="buttons" style="margin-top: 10px;">
+                        <button>Edit Application</button>
+                        <button >Delete Application</button>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</div>
+{% endblock %}

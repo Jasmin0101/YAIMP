@@ -15,6 +15,16 @@ class DepositaryRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Depositary::class);
     }
+    // DepositoryRepository.php
+    public function findByPortfolioId(int $portfolioId)
+    {
+        return $this->createQueryBuilder('d')
+            ->where('d.portfolio = :portfolioId')
+            ->setParameter('portfolioId', $portfolioId)
+            ->getQuery()
+            ->getResult();
+    }
+
 
     //    /**
     //     * @return Depositary[] Returns an array of Depositary objects
