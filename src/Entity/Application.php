@@ -3,31 +3,34 @@
 namespace App\Entity;
 
 use App\Enums\ActionEnum;
-use App\Repository\applicationnRepository;
+use App\Repository\ApplicationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ApplicationRepository::class)]
 class Application
 {
+
+    // id заявки 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+    //Через пользователя достаем  портфель получается  
     #[ORM\ManyToOne(inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    // Индикатор ценной бумаги в заявке 
     #[ORM\ManyToOne(inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Stock $stock = null;
-
+    // Количество 
     #[ORM\Column]
     private ?int $quantity = null;
-
+    // Цена за единицу ценной бумаги 
     #[ORM\Column]
     private ?float $price = null;
-
+    // Статус заявки 
     #[ORM\Column(type: 'string', enumType: ActionEnum::class)]
     private ?ActionEnum $action = null;
 

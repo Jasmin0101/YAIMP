@@ -100,4 +100,27 @@ class GlassController extends AbstractController
         return new Response('OK', Response::HTTP_ACCEPTED);
     }
 
+    #[Route('/glass/stocks', name: 'app_stock_glass_view', methods: ['GET'])]
+
+    public function viewApplications(): Response
+    {
+        // Получаем список всех акций через StockRepository
+        $stocks = $this->stockRepository->findAll();
+
+        // Если ничего не найдено, возвращаем сообщение
+        if (empty($stocks)) {
+            return $this->json([
+                'message' => 'No stocks found in the database.',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Возвращаем данные в Twig-шаблон
+        return $this->render('glass/stock_glass_view.html.twig', [
+            'stocks' => $stocks,
+            'BUY' => ActionEnum::BUY,
+            'SELL' => ActionEnum::SELL,
+        ]);
+    }
 }
+
+

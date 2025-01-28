@@ -3,11 +3,17 @@
 {% block title %}Stock glass index{% endblock %}
 
 {% block body %}
+{# Тут дориализовать дропдаун меню #}
+<div id="app_bar">
+    <!-- Кнопки для перехода на другие страницы -->
+    <button class="app_bar_button" onclick="window.location.href='{{ path('app_profile') }}'">Profile</button>
+    <button class="app_bar_button" onclick="window.location.href='{{ path('app_stock_glass_view') }}'">Application</button>
+</div>
 
 <div class="example-wrapper">
-    <h1>glass index {{stock.security}}</h1>
+    <h1>Glass index  <div style="color:pink"> {{stock.security}} </div></h1>
     <h2>Buy</h2>
-    <div style="color:green">abacaba
+    <div style="color:green">
     {% for app in stock.applications%}
          {%if app.action == BUY %}
          price :{{app.price}} | quantity{{app.quantity}} | total {{app.quantity * app.price}}
@@ -16,10 +22,10 @@
     {%endfor%}
     </div>
     <h3>Sell</h3>
-    <div style="color:red">abacaba
+    <div style="color:red">
     {%for app in stock.applications %}
          {%if app.action == SELL %}
-         price :{{app.price}} | quantity{{app.quantity}}
+         price :{{app.price}} | quantity {{app.quantity}}
          <br>
          {%endif%}
     {%endfor%}

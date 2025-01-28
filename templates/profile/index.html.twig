@@ -4,6 +4,12 @@
 
 {% block body %}
 
+<div id="app_bar">
+    <!-- Кнопки для перехода на другие страницы -->
+    <button class="app_bar_button" onclick="window.location.href='{{ path('app_profile') }}'">Profile</button>
+    <button class="app_bar_button" onclick="window.location.href='{{ path('app_stock_glass_view') }}'">Application</button>
+</div>
+
 <div id="user-profile">
     {% set total = 0 %}
     <h1 id="user-name">User name: {{ user.username }}</h1>

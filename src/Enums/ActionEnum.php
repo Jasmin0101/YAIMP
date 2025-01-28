@@ -6,6 +6,5 @@ enum ActionEnum: string
 {
 
     case BUY = 'buy';
-
     case SELL = 'sell';
 }

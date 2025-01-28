@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stock glass index{% endblock %}
+
+{% block body %}
+<div id="app_bar">
+    <!-- Кнопки для перехода на другие страницы -->
+    <button class="app_bar_button" onclick="window.location.href='{{ path('app_profile') }}'">Profile</button>
+
+
+    <label for="dropdown">Filtration:</label>
+    <select id="dropdown" name="options" onchange="window.location.href=this.value">
+        {% for stock in stocks %}
+            <option value="{{ path('app_stock_glass', {'stockId': stock.id}) }}">
+                {{ stock.security }}
+            </option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="example-wrapper">
+<h1>All Applications</h1>
+ {% for stock in stocks%} 
+    {% for app in stock.applications%}
+        {% if  app.action %}
+            {% if  app.action == BUY%}
+                <h2>Buy</h2>
+            
+                <div style="color:green">
+                {% for app in stock.applications%}
+                    
+                    <h4><div style = "color:deeppink"> {{stock.security}} </div></h4>
+                    <br>
+
+                    price :{{app.price}} | quantity{{app.quantity}} | total {{app.quantity * app.price}}
+                    <br>
+                
+                {% endfor %}
+                </div>
+            {% endif %}
+            {% if  app.action == SELL%}
+                <h3>Sell</h3>
+                {%for app in stock.applications %}
+                    
+                    <h4><div style = "color:deeppink "> {{stock.security}} </div></h4>
+                    
+                <div style="color:red">
+                    price :{{app.price}}  quantity{{app.quantity}} | total {{app.quantity * app.price}}
+                </div>
+                    <br>
+                {% endfor %}
+            {% endif %}
+
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+</div>
+{% endblock %}
