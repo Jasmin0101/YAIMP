@@ -18,7 +18,7 @@ class Application
     //Через пользователя достаем  портфель получается  
     #[ORM\ManyToOne(inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?Portfolio $portfolio = null;
 
     // Индикатор ценной бумаги в заявке 
     #[ORM\ManyToOne(inversedBy: 'applications')]
@@ -39,14 +39,14 @@ class Application
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getPortfolio(): ?Portfolio
     {
-        return $this->user;
+        return $this->portfolio;
     }
 
-    public function setUser(?User $user): static
+    public function setPortfolio(?Portfolio $portfolio): static
     {
-        $this->user = $user;
+        $this->portfolio = $portfolio;
 
         return $this;
     }

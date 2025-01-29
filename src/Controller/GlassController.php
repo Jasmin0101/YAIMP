@@ -104,7 +104,7 @@ class GlassController extends AbstractController
         return new Response('OK', Response::HTTP_ACCEPTED);
     }
 
-    #[Route('/glass/stocks', name: 'app_stock_glass_view', methods: ['GET'])]
+    #[Route('/applications', name: 'app_stock_glass_view', methods: ['GET'])]
 
     public function viewApplications(): Response
     {
@@ -127,52 +127,36 @@ class GlassController extends AbstractController
     }
 
 
-    #[Route('/glass/stocks/myApplication', name: 'app_stock_glass_view_my_application', methods: ['GET'])]
+    #[Route('/applications/my/view', name: 'app_view_my_application', methods: ['GET'])]
     public function viewMyApplications(Request $request): Response
     {
-        // Получаем user_id из запроса (или из текущего пользователя)
-        $userId = $this->getUser()->getId();
-
-        // Получаем все портфели пользователя
-        $portfolios = $this->portfolioRepository->findByUserId($userId);
-        if (!$portfolios) {
+        $user = $this->getUser();
+        if ($user == null) {
+            return $this->json([
+                'message' => 'User not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+        $userPortfolios = $user->getPortfolios();
+        if (empty($userPortfolios)) {
             return $this->json([
                 'message' => 'No portfolios found for this user.',
             ], Response::HTTP_NOT_FOUND);
         }
 
-        // Массив для хранения всех заявок
-        $allApplications = [];
-
-        // Проходим по всем портфелям и получаем заявки из каждого
-        foreach ($portfolios as $portfolio) {
-            // Получаем все депозитарии для текущего портфеля
-            $depositories = $this->depositoryRepository->findByPortfolioId($portfolio->getId());
-            if (empty($depositories)) {
-                continue; // Если нет депозитариев, переходим к следующему портфелю
-            }
-
-            // Извлекаем все акции из депозитариев и добавляем в общий массив
-            foreach ($depositories as $depository) {
-                // Получаем все акции для данного депозитария
-                $stocks = $this->stockRepository->findByDepositoryId($depository->getId());
-                foreach ($stocks as $stock) {
-                    // Здесь можно добавлять логику для фильтрации или обработки данных
-                    $allApplications[] = $stock; // Добавляем заявку в общий список
+        $userApplications = [];
+        $applications = $this->applicationRepository->findAll();
+        foreach ($applications as $application) {
+            foreach ($userPortfolios as $userPortfolio) {
+                if ($application->getPortfolio()->getId() == $userPortfolio->getId()) {
+                    $userApplications[] = $application;
                 }
             }
+
         }
 
-        // Если заявки не найдены, возвращаем сообщение
-        if (empty($allApplications)) {
-            return $this->json([
-                'message' => 'No applications found for this user.',
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        // Возвращаем данные в Twig-шаблон
         return $this->render('glass/stock_glass_my_application.html.twig', [
-            'stocks' => $allApplications,
+
+            'applications' => $userApplications,
             'BUY' => ActionEnum::BUY,
             'SELL' => ActionEnum::SELL,
         ]);

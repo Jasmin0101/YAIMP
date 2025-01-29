@@ -26,14 +26,7 @@ class StockRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
     // StockRepository.php
-    public function findByDepositoryId(int $depositoryId)
-    {
-        return $this->createQueryBuilder('s')
-            ->where('s.depository = :depositoryId')
-            ->setParameter('depositoryId', $depositoryId)
-            ->getQuery()
-            ->getResult();
-    }
+
 
 
     //    /**

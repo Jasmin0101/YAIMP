@@ -17,11 +17,11 @@
         <button >Create Application</button>
     </div>
 
-    {% for stock in stocks %}
-        {% for app in stock.applications %}
+
+        {% for app in applications  %}
             {% if app.action %}
                 <div class="application">
-                    <h4 style="color:deeppink">{{ stock.security }}</h4>
+                    <h4 style="color:deeppink">{{ app.stock.security }}</h4>
 
                     {% if app.action == 'BUY' %}
                         <div style="color:green">
@@ -41,6 +41,6 @@
                 </div>
             {% endif %}
         {% endfor %}
-    {% endfor %}
+ 
 </div>
 {% endblock %}
