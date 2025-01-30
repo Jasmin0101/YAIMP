@@ -3,35 +3,35 @@
 <title>Stock index</title>
 
 {% block body %}
-    <h1>Stock index</h1>
+    <h1 class="page-title">Stock index</h1>
 
-    <table class="table">
+    <table class="stock-table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Security</th>
-                <th>Ticker</th>
-                <th>actions</th>
+                <th class="table-header">Id</th>
+                <th class="table-header">Security</th>
+                <th class="table-header">Ticker</th>
+                <th class="table-header">Actions</th>
             </tr>
         </thead>
         <tbody>
         {% for stock in stocks %}
-            <tr>
-                <td>{{ stock.id }}</td>
-                <td>{{ stock.security }}</td>
-                <td>{{ stock.ticker }}</td>
-                <td>
-                    <a href="{{ path('app_stock_show', {'id': stock.id}) }}">show</a>
-                    <a href="{{ path('app_stock_edit', {'id': stock.id}) }}">edit</a>
+            <tr class="stock-row">
+                <td class="stock-id">{{ stock.id }}</td>
+                <td class="stock-security">{{ stock.security }}</td>
+                <td class="stock-ticker">{{ stock.ticker }}</td>
+                <td class="stock-actions">
+                    <a href="{{ path('app_stock_show', {'id': stock.id}) }}" class="action-link">Show</a>
+                    <a href="{{ path('app_stock_edit', {'id': stock.id}) }}" class="action-link">Edit</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">no records found</td>
+                <td colspan="4" class="no-records">No records found</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_stock_new') }}">Create new</a>
+    <a href="{{ path('app_stock_new') }}" class="create-new-link">Create new</a>
 {% endblock %}

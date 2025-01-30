@@ -1,0 +1,149 @@
+/* Основной стиль для всего тела страницы */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f7fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* Контейнер для списка заявок */
+.example-wrapper {
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовки */
+#applications-header {
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+#no-applications-message {
+  color: #7f8c8d;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+/* Формы */
+.form-container {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #ecf0f1;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-row {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-input {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-top: 5px;
+}
+
+#submit-button {
+  padding: 10px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#submit-button:hover {
+  background-color: #2980b9;
+}
+
+/* Список заявок */
+.applications-list {
+  margin-top: 20px;
+}
+
+.application {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.app-card {
+  flex-grow: 1;
+}
+
+.stock-name {
+  font-weight: bold;
+  font-size: 16px;
+  color: deeppink;
+}
+
+.action-status {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.application-details {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.application-buttons button {
+  margin-left: 10px;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 8px 12px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-delete {
+  background-color: #e74c3c;
+}
+
+.btn-edit:hover,
+.btn-delete:hover {
+  opacity: 0.8;
+}
+
+/* Контейнер для навигации */
+#app_bar {
+  display: flex;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.app_bar_button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.app_bar_button:hover {
+  background-color: #2980b9;
+}

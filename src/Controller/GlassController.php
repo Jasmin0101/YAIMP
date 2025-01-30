@@ -190,6 +190,7 @@ class GlassController extends AbstractController
 
 
         return $this->render('glass/stock_glass_my_application.html.twig', [
+            'stocks' => $this->stockRepository->findAll(),
             'applications' => $userApplications,
             'depositories' => $userDepository,
             'portfolios' => $userPortfolios,

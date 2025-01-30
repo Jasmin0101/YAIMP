@@ -1,0 +1,109 @@
+/* Общий стиль для страницы редактирования заявки */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f7fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* Контейнер для формы редактирования */
+.form-container {
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовки */
+h1,
+h2 {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Стиль для информации о текущей заявке */
+.application-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.application-details h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.application-details .label {
+  font-weight: bold;
+}
+
+.application-details .value {
+  font-size: 1.2rem;
+  color: #34495e;
+}
+
+.application-details div {
+  display: flex;
+  align-items: center;
+}
+
+/* Формы */
+form {
+  margin-top: 20px;
+}
+
+form label {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  color: #34495e;
+}
+
+form input,
+form select {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+form input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+form button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #2980b9;
+}
+
+/* Стиль для кнопки обновления */
+button[type="submit"] {
+  font-size: 1rem;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  padding: 12px;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #27ae60;
+}

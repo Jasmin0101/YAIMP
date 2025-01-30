@@ -21,6 +21,7 @@
     <h1>All Applications</h1>
 
     {% for stock in stocks %}
+        {% if stock.applications is  not empty%}
         <h2><span style="color: deeppink">{{ stock.security }}</span></h2>
 
         {# Отображаем заявки на покупку (BUY) #}
@@ -43,6 +44,7 @@
                     Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}
                 </div>
             {% endfor %}
+        {% endif %}
         {% endif %}
     {% endfor %}
 </div>

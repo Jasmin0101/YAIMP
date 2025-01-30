@@ -12,25 +12,31 @@
 </div>
 
 <div class="example-wrapper">
-    <h1>Glass index  <div style="color:pink"> {{stock.security}} </div></h1>
-    <h2>Buy</h2>
+{% if stock.applications is empty %}
+    <h1 style = 'color:blue'>There are no applications :((( </h1>
+{% else %}
+    <div style='display: flex; flex-direction: row; item-align: center;'><h1>Glass index </h1> <div style = 'width: 1rem '></div><h1 style="color:pink"> {{stock.security}} </h1></div>
     <div style="color:green">
     {% for app in stock.applications%}
+        
          {%if app.action == BUY %}
+           <h2>Buy</h2>
          price :{{app.price}} | quantity{{app.quantity}} | total {{app.quantity * app.price}}
          <br>
          {%endif%}
     {%endfor%}
     </div>
-    <h3>Sell</h3>
+   
     <div style="color:red">
     {%for app in stock.applications %}
          {%if app.action == SELL %}
+          <h2>Sell</h2>
          price :{{app.price}} | quantity {{app.quantity}}
          <br>
          {%endif%}
     {%endfor%}
     </div>
+{% endif %}
 
 </div>
 {% endblock %}
