@@ -93,6 +93,8 @@ class GlassController extends AbstractController
 
         $this->applicationRepository->saveApplication($application);
 
+
+        $this->dealService->executeDeal($applicationId);
         // Используем редирект с правильной формой пути
         return $this->redirectToRoute('app_update_application', ['applicationId' => $applicationId]);
     }

@@ -6,7 +6,7 @@
 <div id="app_bar">
     <!-- Кнопки для перехода на другие страницы -->
     <button class="app_bar_button" onclick="window.location.href='{{ path('app_profile') }}'">Profile</button>
-
+      <button class="app_bar_button" onclick="window.location.href='{{ path('app_view_my_application') }}'">My Application</button>
     <label for="dropdown">Filtration:</label>
     <select id="dropdown" name="options" onchange="window.location.href=this.value">
         {% for stock in stocks %}

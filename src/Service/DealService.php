@@ -2,11 +2,16 @@
 
 namespace App\Service;
 
+use App\Entity\Application;
+use App\Entity\Depositary;
+use App\Entity\Portfolio;
+use App\Enums\ActionEnum;
 use App\Repository\ApplicationRepository;
 use App\Repository\PortfolioRepository;
 use App\Repository\DepositaryRepository;
 use App\Repository\StockRepository;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class DealService
 {
@@ -15,76 +20,90 @@ class DealService
         private readonly UserRepository $userRepository,
         private readonly ApplicationRepository $applicationRepository,
         private readonly PortfolioRepository $portfolioRepository,
-        private readonly DepositaryRepository $depositoryRepository
+        private readonly DepositaryRepository $depositoryRepository,
+        private readonly EntityManagerInterface $entityManager
     ) {
     }
 
     public function executeDeal(int $myApplicationId): void
     {
-        $usersApplications = $this->applicationRepository->findAll();
-        $myApplication = $this->applicationRepository->findById($myApplicationId);
-
+        $myApplication = $this->applicationRepository->find($myApplicationId);
         if (!$myApplication) {
-            throw new \Exception("Application not found");
+            return;
         }
 
-        foreach ($usersApplications as $userApplication) {
-            if (!$userApplication instanceof Application) {
-                continue;
-            }
+        $usersApplications = $this->applicationRepository->findAll();
 
+        foreach ($usersApplications as $userApplication) {
             if ($userApplication->getId() === $myApplicationId) {
                 continue;
             }
 
             // Проверяем, чтобы пользователи были разными
-            if ($userApplication->getPortfolio()->getUser()->getId() === $myApplication->getPortfolio()->getUser()->getId()) {
+            if ($userApplication->getPortfolio()->getUser() === $myApplication->getPortfolio()->getUser()) {
                 continue;
             }
 
+            // Проверяем, что заявки совпадают по цене, количеству и активу, но имеют противоположное действие
             if (
                 $userApplication->getStock()->getId() === $myApplication->getStock()->getId() &&
                 $userApplication->getPrice() === $myApplication->getPrice() &&
                 $userApplication->getQuantity() === $myApplication->getQuantity() &&
                 $userApplication->getAction() !== $myApplication->getAction()
             ) {
-                if ($myApplication->getAction() === 'buy') {
-                    $buyer = $myApplication->getPortfolio();
-                    $seller = $userApplication->getPortfolio();
-                } else {
-                    $buyer = $userApplication->getPortfolio();
-                    $seller = $myApplication->getPortfolio();
-                }
-
-                $totalPrice = $myApplication->getPrice() * $myApplication->getQuantity();
-
-                // Обновляем баланс пользователей
-                $buyer->setBalance($buyer->getBalance() - $totalPrice);
-                $seller->setBalance($seller->getBalance() + $totalPrice);
-
-                // Обновляем количество ценных бумаг (через Depositary)
-                $sellerDepositary = $seller->getDepositary();
-                $buyerDepositary = $buyer->getDepositary();
-
-                if (!$sellerDepositary || !$buyerDepositary) {
-                    throw new \Exception("Depositary not found for one of the users");
-                }
-
-                $sellerDepositary->setQuantity($sellerDepositary->getQuantity() - $myApplication->getQuantity());
-                $buyerDepositary->setQuantity($buyerDepositary->getQuantity() + $myApplication->getQuantity());
-
-                // Сохраняем изменения в базе
-                $this->portfolioRepository->save($buyer);
-                $this->portfolioRepository->save($seller);
-                $this->depositoryRepository->save($sellerDepositary);
-                $this->depositoryRepository->save($buyerDepositary);
-
-                // Удаляем заявки из базы
-                $this->applicationRepository->removeApplication($myApplication);
-                $this->applicationRepository->removeApplication($userApplication);
-
-                break; // Завершаем выполнение после первой успешной сделки
+                $this->processExchange($myApplication, $userApplication);
+                return;
             }
         }
+    }
+
+    private function processExchange(Application $buyApplication, Application $sellApplication): void
+    {
+        if ($buyApplication->getAction() === ActionEnum::BUY) {
+            $buyer = $buyApplication->getPortfolio();
+            $seller = $sellApplication->getPortfolio();
+        } else {
+            $buyer = $sellApplication->getPortfolio();
+            $seller = $buyApplication->getPortfolio();
+        }
+
+        $price = $buyApplication->getPrice();
+        $quantity = $buyApplication->getQuantity();
+        $totalAmount = $price * $quantity;
+
+        // Обновляем баланс пользователей
+        $buyer->setBalance($buyer->getBalance() - $totalAmount);
+        $seller->setBalance($seller->getBalance() + $totalAmount);
+
+        // Обновляем количество ценных бумаг у покупателей и продавцов
+        $this->updateDepositary($buyer, $buyApplication->getStock(), $quantity);
+        $this->updateDepositary($seller, $sellApplication->getStock(), -$quantity);
+
+        // Удаляем заявки
+        $this->entityManager->remove($buyApplication);
+        $this->entityManager->remove($sellApplication);
+        $this->entityManager->flush();
+    }
+
+    private function updateDepositary(Portfolio $portfolio, $stock, int $quantity): void
+    {
+        $depositary = $this->depositoryRepository->findOneBy([
+            'portfolio' => $portfolio,
+            'stock' => $stock
+        ]);
+
+        if ($depositary) {
+            $depositary->setQuantity($depositary->getQuantity() + $quantity);
+        } else {
+            if ($quantity > 0) {
+                $depositary = new Depositary();
+                $depositary->setPortfolio($portfolio);
+                $depositary->setStock($stock);
+                $depositary->setQuantity($quantity);
+                $this->entityManager->persist($depositary);
+            }
+        }
+
+        $this->entityManager->flush();
     }
 }
