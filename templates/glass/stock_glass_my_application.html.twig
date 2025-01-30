@@ -6,41 +6,90 @@
 <div id="app_bar">
     <!-- Кнопки для перехода на другие страницы -->
     <button class="app_bar_button" onclick="window.location.href='{{ path('app_profile') }}'">Profile</button>
-        <button class="app_bar_button" onclick="window.location.href='{{ path('app_stock_glass_view') }}'">Application</button>
+    <button class="app_bar_button" onclick="window.location.href='{{ path('app_stock_glass_view') }}'">Application</button>
 </div>
 
 <div class="example-wrapper">
     <h1>All Applications</h1>
 
     <!-- Кнопка для создания новой заявки -->
-    <div style="margin-bottom: 20px;">
-        <button >Create Application</button>
-    </div>
+<div class="form-container">
+    <h1>Create Application</h1>
+    <form action="{{ path('app_create_application') }}" method="POST">
+        <label for="portfolio">Portfolio:</label>
+        <select name="portfolio" id="portfolio" required>
+            {% for portfolio in portfolios %}
+                <option value="{{ portfolio.id }}">{{ portfolio.id }}</option>
+            {% endfor %}
+        </select>
 
-
-        {% for app in applications  %}
-            {% if app.action %}
-                <div class="application">
-                    <h4 style="color:deeppink">{{ app.stock.security }}</h4>
-
-                    {% if app.action == 'BUY' %}
-                        <div style="color:green">
-                            <p>Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}</p>
-                        </div>
-                    {% elseif app.action == 'SELL' %}
-                        <div style="color:red">
-                            <p>Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}</p>
-                        </div>
-                    {% endif %}
-
-                    <!-- Кнопки для редактирования и удаления заявки -->
-                    <div class="buttons" style="margin-top: 10px;">
-                        <button>Edit Application</button>
-                        <button >Delete Application</button>
-                    </div>
-                </div>
+        <label for="stock">Stock:</label>
+        <select name="stock" id="stock" required>+
+            {% for portfolio in portfolios %}
+                {% for depository in depositories %}
+                
+            {% if depository.portfolio  == portfolio %}
+                    
+                        <option value="{{ depository.stock.id }}">{{ depository.stock.security  }}</option>
+                
             {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </select>
+
+        <label for="quantity">Quantity:</label>
+=
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" min="0" step="0.01" required>
+        
+        <label for="action">Action:</label>
+        <select id="action" name="action" required>
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+        </select>
+
+        <button type="submit">Create Application</button>
+    </form>
+</div>
+
+
+    {% if applications is empty %}
+        <h2>You don't have any applications</h2>
+    {% else %}
+        {% for app in applications %}
+            <div class="application">
+                <h2 style="color:deeppink">{{ app.stock.security }}</h2>
+                {% if app.action == BUY %}
+                    <div style="color:green">
+                        <h3>Status: BUY</h3>
+                    </div>
+                    <div style="color:green">
+                        <p>Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}</p>
+                    </div>
+                {% elseif app.action == SELL %}
+                    <div style="color:red">
+                        <h3>Status: SELL</h3>
+                    </div>
+                    <div style="color:red">
+                        <p>Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}</p>
+                    </div>
+                {% endif %}
+
+                <!-- Кнопки для редактирования и удаления заявки -->
+                <div class="buttons" style="margin-top: 10px;">
+            <button onclick="window.location.href='{{ path('app_update_show_application', {'applicationId': app.id}) }}'">
+                   Edit Application
+            </button>  
+                  <form method="POST" action="{{ path('app_stock_glass_delete_application',  {'applicationId': app.id}) }}">
+                    <button type="submit">
+                        Delete Application
+                    </button>
+                    </form>
+
+                </div>
+            </div>
         {% endfor %}
- 
+    {% endif %}
 </div>
 {% endblock %}

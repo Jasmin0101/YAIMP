@@ -15,6 +15,7 @@ use LDAP\Result;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Config\Security\AccessControlConfig;
 
@@ -43,65 +44,83 @@ class GlassController extends AbstractController
             'SELL' => ActionEnum::SELL,
         ]);
     }
-    #[Route('/glass/stock/{stockId}', name: 'app_stock_glass_create_application', methods: ['POST'])]
-    public function createApplication(int $stockId, Request $request): Response
+    #[Route('/applications/create', name: 'app_create_application', methods: ['POST'])]
+    public function createApplication(Request $request): Response
     {
-        $userId = $request->getPayload()->get('user_id');
+        $userId = $this->getUser();
+        if (!$userId) {
+            return $this->json(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+
+
+        $quantity = $request->getPayload()->get('quantity');
+        $price = $request->getPayload()->get('price');
+        $stockId = $request->getPayload()->get('stock');
+        $action = ActionEnum::from($request->getPayload()->get('action'));
+        $portfolioId = $request->getPayload()->get('portfolio');
+
+        $portfolio = $this->portfolioRepository->find($portfolioId);
+        $stock = $this->stockRepository->find($stockId);
+        $application = new Application();
+        $application->setQuantity($quantity);
+        $application->setAction($action);
+        $application->setPrice($price);
+        $application->setStock($stock);
+        $application->setPortfolio($portfolio);
+
+        $this->applicationRepository->saveApplication($application);
+        return new RedirectResponse('/applications/my/view');
+
+
+    }
+    #[Route('/applications/update/{applicationId}', name: 'app_update_application', methods: ['POST'])]
+    public function updateApplication(Request $request, int $applicationId)
+    {
         $quantity = $request->getPayload()->get('quantity');
         $price = $request->getPayload()->get('price');
         $action = ActionEnum::from($request->getPayload()->get('action'));
 
-        $stock = $this->stockRepository->findById($stockId);
-        $users = $this->userRepository->findBy(['id' => $userId]);
-
-
-
-        $application = new Application();
-        $application->setStock($stock);
-        $application->setQuantity($quantity);
-        $application->setAction($action);
-        $application->setPrice($price);
-        $application->setUser(current($users));
-
-        $this->applicationRepository->saveApplication($application);
-
-
-        return new Response("OK ");
-    }
-
-    #[Route('/glass/stock/{stockId}', name: 'app_stock_glass_update_application', methods: ['PATCH'])]
-
-    public function updateApplication(int $stockId, Request $request)
-    {
-
-        $applicationId = $request->getPayload()->get('application_id');
-        $quantity = $request->getPayload()->get('quantity');
-        $price = $request->getPayload()->get('price');
-
         $application = $this->applicationRepository->find($applicationId);
 
         $application->setQuantity($quantity);
         $application->setPrice($price);
+        $application->setAction($action);
 
         $this->applicationRepository->saveApplication($application);
-        return new Response('OK', Response::HTTP_ACCEPTED);
 
-
+        // Используем редирект с правильной формой пути
+        return $this->redirectToRoute('app_update_application', ['applicationId' => $applicationId]);
     }
 
-    #[Route('/glass/stock/{stockId}', name: 'app_stock_glass_delete_application', methods: ['DELETE'])]
 
-    public function deleteApplication(int $stockId, Request $request)
+    #[Route('/applications/update/{applicationId}', name: 'app_update_show_application', methods: ['GET'])]
+
+    public function showUpdateApplication(int $applicationId)
     {
+        $user = $this->getUser();
+        if ($user == null) {
+            return $this->json([
+                'message' => 'User not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
 
-        $applicationId = $request->getPayload()->get('application_id');
+        $application = $this->applicationRepository->find($applicationId);
+        return $this->render('glass/stock_applications_update.html.twig', [
+            'application' => $application,
+            'BUY' => ActionEnum::BUY,
+            'SELL' => ActionEnum::SELL,
+        ]);
+    }
 
+    #[Route('/application/delete/{applicationId}', name: 'app_stock_glass_delete_application', methods: ['POST'])]
 
+    public function deleteApplication(int $applicationId, Request $request): Response
+    {
         $application = $this->applicationRepository->find($applicationId);
 
         $this->applicationRepository->removeApplication($application);
 
-        return new Response('OK', Response::HTTP_ACCEPTED);
+        return new RedirectResponse('/applications/my/view');
     }
 
     #[Route('/applications', name: 'app_stock_glass_view', methods: ['GET'])]
@@ -130,6 +149,7 @@ class GlassController extends AbstractController
     #[Route('/applications/my/view', name: 'app_view_my_application', methods: ['GET'])]
     public function viewMyApplications(Request $request): Response
     {
+        $depositors = $this->depositoryRepository->findAll();
         $user = $this->getUser();
         if ($user == null) {
             return $this->json([
@@ -145,6 +165,13 @@ class GlassController extends AbstractController
 
         $userApplications = [];
         $applications = $this->applicationRepository->findAll();
+        foreach ($depositors as $depository) {
+            foreach ($userPortfolios as $userPortfolio) {
+                if ($depository->getPortfolio()->getId() == $userPortfolio->getId()) {
+                    $userDepository[] = $depository;
+                }
+            }
+        }
         foreach ($applications as $application) {
             foreach ($userPortfolios as $userPortfolio) {
                 if ($application->getPortfolio()->getId() == $userPortfolio->getId()) {
@@ -154,9 +181,11 @@ class GlassController extends AbstractController
 
         }
 
-        return $this->render('glass/stock_glass_my_application.html.twig', [
 
+        return $this->render('glass/stock_glass_my_application.html.twig', [
             'applications' => $userApplications,
+            'depositories' => $userDepository,
+            'portfolios' => $userPortfolios,
             'BUY' => ActionEnum::BUY,
             'SELL' => ActionEnum::SELL,
         ]);
