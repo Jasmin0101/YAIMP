@@ -11,6 +11,7 @@ use App\Repository\PortfolioRepository;
 use App\Repository\DepositaryRepository;
 use App\Repository\StockRepository;
 use App\Repository\UserRepository;
+use App\Service\DealService;
 use LDAP\Result;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +27,8 @@ class GlassController extends AbstractController
         private readonly UserRepository $userRepository,
         private readonly ApplicationRepository $applicationRepository,
         private readonly PortfolioRepository $portfolioRepository,
-        private readonly DepositaryRepository $depositoryRepository
+        private readonly DepositaryRepository $depositoryRepository,
+        private readonly DealService $dealService
     ) {
 
     }
@@ -69,6 +71,9 @@ class GlassController extends AbstractController
         $application->setPortfolio($portfolio);
 
         $this->applicationRepository->saveApplication($application);
+
+        $this->dealService->executeDeal($application->getId());
+
         return new RedirectResponse('/applications/my/view');
 
 

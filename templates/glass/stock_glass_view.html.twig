@@ -7,7 +7,6 @@
     <!-- Кнопки для перехода на другие страницы -->
     <button class="app_bar_button" onclick="window.location.href='{{ path('app_profile') }}'">Profile</button>
 
-
     <label for="dropdown">Filtration:</label>
     <select id="dropdown" name="options" onchange="window.location.href=this.value">
         {% for stock in stocks %}
@@ -19,40 +18,32 @@
 </div>
 
 <div class="example-wrapper">
-<h1>All Applications</h1>
- {% for stock in stocks%} 
-    {% for app in stock.applications%}
-        {% if  app.action %}
-            {% if  app.action == BUY%}
-                <h2>Buy</h2>
-            
-                <div style="color:green">
-                {% for app in stock.applications%}
-                    
-                    <h4><div style = "color:deeppink"> {{stock.security}} </div></h4>
-                    <br>
+    <h1>All Applications</h1>
 
-                    price :{{app.price}} | quantity{{app.quantity}} | total {{app.quantity * app.price}}
-                    <br>
-                
-                {% endfor %}
-                </div>
-            {% endif %}
-            {% if  app.action == SELL%}
-                <h3>Sell</h3>
-                {%for app in stock.applications %}
-                    
-                    <h4><div style = "color:deeppink "> {{stock.security}} </div></h4>
-                    
-                <div style="color:red">
-                    price :{{app.price}}  quantity{{app.quantity}} | total {{app.quantity * app.price}}
-                </div>
-                    <br>
-                {% endfor %}
-            {% endif %}
+    {% for stock in stocks %}
+        <h2><span style="color: deeppink">{{ stock.security }}</span></h2>
 
+        {# Отображаем заявки на покупку (BUY) #}
+        {% set buyApps = stock.applications|filter(app => app.action == BUY) %}
+        {% if buyApps is not empty %}
+            <h3 style="color: green">Buy</h3>
+            {% for app in buyApps %}
+                <div>
+                    Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {# Отображаем заявки на продажу (SELL) #}
+        {% set sellApps = stock.applications|filter(app => app.action == SELL) %}
+        {% if sellApps is not empty %}
+            <h3 style="color: red">Sell</h3>
+            {% for app in sellApps %}
+                <div>
+                    Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}
+                </div>
+            {% endfor %}
         {% endif %}
     {% endfor %}
-{% endfor %}
 </div>
 {% endblock %}
