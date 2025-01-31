@@ -61,6 +61,8 @@
                                 {% set total = 0 %}
                                 {% for portfolio in user.portfolios %}
                                     {% set walletTotal = 0 %}
+                                    {% set walletTotal = walletTotal + portfolio.balance %}
+                                    {% set total = walletTotal + total %}
                                     <div class="portfolio-entry mb-3 p-3 border rounded">
                                         <h5>Portfolio {{ portfolio.id }}:</h5>
                                         <p>Balance: {{ portfolio.balance }}</p>
@@ -75,7 +77,7 @@
                                         </ul>
                                         <h5 class="portfolio-balance">Total balance for this portfolio: {{ walletTotal }}</h5>
                                     </div>
-                                    {% set total = total + walletTotal %}
+
                                 {% endfor %}
                             </div>
                             
@@ -88,6 +90,7 @@
 
                     </div>
                 </div>
+                   <a class="btn btn-lg btn-danger w-100 mt-4" href="/logout">Logout</a>
             </div>
         </div>
     </div>

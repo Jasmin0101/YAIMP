@@ -10,7 +10,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-            <a class="nav-link" href="/applications">Applications</a>
+            <a class="nav-link active" href="/applications">Applications</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/applications/my/view">MyApplications</a>
@@ -61,46 +61,52 @@
     <h2 class="text-center">All Applications</h2>
     
 
-
+    {# {% set has_applications = false %} #}
 
     {% for stock in stocks %} 
 
-        {% if stock.applications|length == 0 %}
-        
-        <div class="card px-2 py-4 my-4 mx-5">
-            <div class="card-body m-0">
-                <h2 class="text-center">No applications found</h2>
-            </div>
-        </div>
-        {% endif %}
+        {# {% if stock.applications|length != 0 %}
+          {% set has_applications = true %}
+  
+        {% endif %} #}
 
         {% for app in stock.applications %}
-            {% if app.action %}
-                {% if app.action == 'BUY' %}
+          
+                {% if app.action == BUY %}
                     <h2 class="text-success">Buy</h2>
                     <div class="text-success">
-                        {% for app in stock.applications %}
+                     
                             <h4><span class="text-danger">{{ stock.security }}</span></h4>
                             <p>
                                 Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}
                             </p>
-                        {% endfor %}
+            
                     </div>
                 {% endif %}
 
-                {% if app.action == 'SELL' %}
+                {% if app.action == SELL %}
                     <h3 class="text-danger">Sell</h3>
                     <div class="text-danger">
-                        {% for app in stock.applications %}
+             
                             <h4><span class="text-danger">{{ stock.security }}</span></h4>
                             <p>
                                 Price: {{ app.price }} | Quantity: {{ app.quantity }} | Total: {{ app.quantity * app.price }}
                             </p>
-                        {% endfor %}
+                  
                     </div>
                 {% endif %}
-            {% endif %}
+         
         {% endfor %}
     {% endfor %}
+{# 
+    {% if not has_applications %}
+
+    <div class="card px-2 py-4 my-4 mx-5">
+        <div class="card-body m-0">
+            <h2 class="text-center">No applications found</h2>
+        </div>
+    </div>
+
+    {% endif %} #}
 </div>
 {% endblock %}

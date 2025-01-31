@@ -137,8 +137,8 @@ class GlassController extends AbstractController
     public function viewApplications(): Response
     {
         // Получаем список всех акций через StockRepository
+        $application = $this->applicationRepository->findAll();
         $stocks = $this->stockRepository->findAll();
-
         // Если ничего не найдено, возвращаем сообщение
         if (empty($stocks)) {
             return $this->json([
@@ -149,6 +149,7 @@ class GlassController extends AbstractController
         // Возвращаем данные в Twig-шаблон
         return $this->render('glass/stock_glass_view.html.twig', [
             'stocks' => $stocks,
+            'application' => $application,
             'BUY' => ActionEnum::BUY,
             'SELL' => ActionEnum::SELL,
         ]);
