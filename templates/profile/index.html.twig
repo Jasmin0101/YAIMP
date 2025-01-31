@@ -4,69 +4,114 @@
 
 {% block body %}
 
-<div id="app_bar">
-    <!-- Кнопки для перехода на другие страницы -->
-    <button class="app_bar_button" onclick="window.location.href='{{ path('app_stock_glass_view') }}'">Application</button>
-      <button class="app_bar_button" onclick="window.location.href='{{ path('app_view_my_application') }}'">My Application</button>
-</div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light  fixed-top">
+        <div class="container-fluid">
 
-<div id="user-profile">
-    {% set total = 0 %}
-    <h1 id="user-name">User name: {{ user.username }}</h1>
-    <h1 id="portfolios-title">Your portfolios:</h1>
-    <h3 id="portfolio-count">Total numbers of portfolios: {{ user.portfolios|length }}</h3>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link" href="/applications">Applications</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/applications/my/view">MyApplications</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/stock">Stock</a>
+            </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile">
+                    Profile
+                    </a>
+                </li>
+                </ul>
+        </div>
+        </div>
+    </nav>
 
-    <div id="portfolios-list">
-        {% for portfolio in user.portfolios %}
-            {% set walletTotal = 0 %}
+    <div class="container d-flex justify-content-center align-items-center min-vh-100" style="padding-top: 70px; padding-bottom: 20px;">
+        <div class="row justify-content-center w-100">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h1 class="h3 mb-3 font-weight-normal text-center">Profile</h1>
 
-            <div class="portfolio-entry" id="portfolio-{{ portfolio.id }}">
-                <span class="portfolio-info">Portfolio {{ portfolio.id }} has {{ portfolio.balance }} money and has stocks:</span>
-                <br>
-                {% for depositary in portfolio.depositaries %}
-                    <div class="depositary-entry">
-                        <h4 class="stock-name">Stock name:</h4>
-                        <p class="stock-details">{{ depositary.stock.security }}, quantity: {{ depositary.quantity }}</p>
+                        <!-- User Info -->
+                        <div id="user-profile">
+                            <h3 class="text-start">User name: {{ user.username }}</h3>
+                            <hr class="bg-primary border-2 border-top border-primary" />
+                            <h3 class="text-start">Your portfolios:</h3>
+                            <h5>Total number of portfolios: {{ user.portfolios|length }}</h5>
+
+
+                            <!-- Add Portfolio Action -->
+                            <div id="portfolio-actions" class="mt-4">
+                                {% if user.portfolios|length < 5 %}
+                                    <button class="btn btn-lg btn-primary w-100" onclick="addPortfolio()">Add New Portfolio</button>
+                                {% else %}
+                                    <button class="btn btn-lg btn-secondary w-100" onclick="alert('You have a limit of portfolios!');">Add New Portfolio</button>
+                                {% endif %}
+                            </div>
+
+                            
+
+                            <!-- Portfolio List -->
+                            <div id="portfolios-list" class="mt-4">
+                                {% set total = 0 %}
+                                {% for portfolio in user.portfolios %}
+                                    {% set walletTotal = 0 %}
+                                    <div class="portfolio-entry mb-3 p-3 border rounded">
+                                        <h5>Portfolio {{ portfolio.id }}:</h5>
+                                        <p>Balance: {{ portfolio.balance }}</p>
+                                        <p>Stocks:</p>
+                                        <ul>
+                                            {% for depositary in portfolio.depositaries %}
+                                                <li>
+                                                    <strong>Stock name:</strong> {{ depositary.stock.security }},
+                                                    <strong>Quantity:</strong> {{ depositary.quantity }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        <h5 class="portfolio-balance">Total balance for this portfolio: {{ walletTotal }}</h5>
+                                    </div>
+                                    {% set total = total + walletTotal %}
+                                {% endfor %}
+                            </div>
+                            
+
+                            <h3>Total balance: {{ total }}</h3>
+                           
+                        </div>
+
+                        
+
                     </div>
-                    <br>
-                {% endfor %}
-                {% set walletTotal = walletTotal + portfolio.balance %}
-                {% set total = walletTotal + total %}
-                <h3 class="portfolio-balance">Balance of portfolio {{ portfolio.id }}: {{ walletTotal }}</h3>
-                <br>
+                </div>
             </div>
-        {% endfor %}
+        </div>
     </div>
 
-    <h1 id="total-balance" class="total-balance">Total balance: {{ total }}</h1>
+    <script>
+        async function addPortfolio() {
+            try {
+                const response = await fetch("{{ path('add_portfolio') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-    <div id="portfolio-actions">
-        {% if user.portfolios|length <= 4 %}
-            <button class="btn btn-primary" onclick="addPortfolio()">Add New Portfolio</button>
-        {% endif %}
-        {% if user.portfolios|length >= 5 %}
-            <button class="btn" onclick="alert('You have a limit of portfolios!');">Add New Portfolio</button>
-        {% endif %}
-    </div>
-</div>
-
-<script>
-    async function addPortfolio() {
-        const response = await fetch('{{ path('add_portfolio') }}', {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'application/json'
+                if (response.ok) {
+                    alert('Portfolio added successfully!');
+                    location.reload();
+                } else {
+                    alert('Failed to add portfolio');
+                }
+            } catch (error) {
+                alert('An error occurred: ' + error.message);
             }
-        });
-
-        if (response.ok) {
-            alert('Portfolio added successfully!');
-            location.reload();
-        } else {
-            alert('Failed to add portfolio');
         }
-    }
-</script>
-
+    </script>
 {% endblock %}
