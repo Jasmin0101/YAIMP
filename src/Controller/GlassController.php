@@ -19,7 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Config\Security\AccessControlConfig;
-
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validation;
 class GlassController extends AbstractController
 {
     public function __construct(
@@ -46,6 +47,8 @@ class GlassController extends AbstractController
             'SELL' => ActionEnum::SELL,
         ]);
     }
+
+
     #[Route('/applications/create', name: 'app_create_application', methods: ['POST'])]
     public function createApplication(Request $request): Response
     {
@@ -56,14 +59,44 @@ class GlassController extends AbstractController
 
 
         $quantity = $request->getPayload()->get('quantity');
+        if ($quantity < 0) {
+            return $this->json([
+                'message' => 'Quantity must be greater than 0',
+            ], Response::HTTP_BAD_REQUEST);
+        }
         $price = $request->getPayload()->get('price');
+        if ($price < 0) {
+            return $this->json([
+                'message' => 'Price must be greater than 0',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         $stockId = $request->getPayload()->get('stock');
+
+
         $action = ActionEnum::from($request->getPayload()->get('action'));
         $portfolioId = $request->getPayload()->get('portfolio');
+        $depositary = $this->depositoryRepository->find($portfolioId);
+        if ($stockId != $depositary->getStock()->getId()) {
+            return $this->json([
+                'message' => 'Stock is not in Portfolio ',
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         $portfolio = $this->portfolioRepository->find($portfolioId);
         $stock = $this->stockRepository->find($stockId);
 
+        if ($depositary->getQuantity() < $quantity) {
+            return $this->json([
+                'message' => 'Not enough stocks in the portfolio',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($depositary->getPortfolio()->getBalance() < $quantity * $price && $action == ActionEnum::BUY) {
+            return $this->json([
+                'message' => 'Not enough money in the portfolio',
+            ], Response::HTTP_NOT_FOUND);
+        }
         $application = new Application();
 
         $application->setQuantity($quantity);
@@ -84,11 +117,21 @@ class GlassController extends AbstractController
     public function updateApplication(Request $request, int $applicationId)
     {
         $quantity = $request->getPayload()->get('quantity');
+        if ($quantity < 0) {
+            return $this->json([
+                'message' => 'Quantity must be greater than 0',
+            ], Response::HTTP_BAD_REQUEST);
+        }
         $price = $request->getPayload()->get('price');
         $action = ActionEnum::from($request->getPayload()->get('action'));
 
-        $application = $this->applicationRepository->find($applicationId);
 
+        $application = $this->applicationRepository->find($applicationId);
+        if ($application == null) {
+            return $this->json([
+                'message' => 'Application not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
         $application->setQuantity($quantity);
         $application->setPrice($price);
         $application->setAction($action);
@@ -114,6 +157,11 @@ class GlassController extends AbstractController
         }
 
         $application = $this->applicationRepository->find($applicationId);
+        if ($application == null) {
+            return $this->json([
+                'message' => 'Application not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
         return $this->render('glass/stock_applications_update.html.twig', [
             'application' => $application,
             'BUY' => ActionEnum::BUY,
@@ -126,8 +174,14 @@ class GlassController extends AbstractController
     public function deleteApplication(int $applicationId, Request $request): Response
     {
         $application = $this->applicationRepository->find($applicationId);
+        if ($application == null) {
+            return $this->json([
+                'message' => 'Application not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         $this->applicationRepository->removeApplication($application);
+
 
         return new RedirectResponse('/applications/my/view');
     }
@@ -139,6 +193,7 @@ class GlassController extends AbstractController
         // Получаем список всех акций через StockRepository
         $application = $this->applicationRepository->findAll();
         $stocks = $this->stockRepository->findAll();
+
         // Если ничего не найдено, возвращаем сообщение
         if (empty($stocks)) {
             return $this->json([
